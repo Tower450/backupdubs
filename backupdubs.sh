@@ -85,3 +85,5 @@ done
 
 echo "All audio files have been copied to $DEST_DIR."
 
+echo "Clean up opened files (rsync leftover)"
+lsof "$USB_MOUNT" | awk 'NR>1 {print $2}' | xargs  kill -9

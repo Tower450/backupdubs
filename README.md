@@ -52,9 +52,16 @@ This script allows you to copy all audio files from a USB drive to your local ma
 - The script has been tested on **macOS** and **Linux**.
 - The USB drive must be mounted and accessible.
 
+Linux / MacOS
 **Don't forget to make it executable**
 ```bash
 chmod a+x
+```
+
+Windows
+
+```ps
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
 
 ## Usage:
@@ -77,4 +84,14 @@ This will copy all audio files into the `./AudioBackup` directory without preser
 ./backupdubs.sh <USB_NAME> --no-structure
 ```
 
+### Basic Usage (Windows)
 
+This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
+```ps
+.\backupdubs.ps1 -USB_NAME "MyUSBDrive"
+```
+
+This will copy all audio files into the `./AudioBackup` directory without preserving the folder structure
+```ps
+.\backupdubs.ps1 -USB_NAME "MyUSBDrive" -NoStructure
+```
