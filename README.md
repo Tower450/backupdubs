@@ -77,4 +77,14 @@ This will copy all audio files into the `./AudioBackup` directory without preser
 ./backupdubs.sh <USB_NAME> --no-structure
 ```
 
+### Basic Usage (Windows)
 
+This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
+```ps
+.\retrieve_audio_files.ps1 -USB_NAME "MyUSBDrive"
+```
+
+This will copy all audio files into the `./AudioBackup` directory without preserving the folder structure
+```ps
+.\retrieve_audio_files.ps1 -USB_NAME "MyUSBDrive" -NoStructure
+```
