@@ -52,9 +52,16 @@ This script allows you to copy all audio files from a USB drive to your local ma
 - The script has been tested on **macOS** and **Linux**.
 - The USB drive must be mounted and accessible.
 
+Linux / MacOS
 **Don't forget to make it executable**
 ```bash
 chmod a+x
+```
+
+Windows
+
+```ps
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
 
 ## Usage:
