@@ -81,10 +81,10 @@ This will copy all audio files into the `./AudioBackup` directory without preser
 
 This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
 ```ps
-.\retrieve_audio_files.ps1 -USB_NAME "MyUSBDrive"
+.\backupdubss.ps1 -USB_NAME "MyUSBDrive"
 ```
 
 This will copy all audio files into the `./AudioBackup` directory without preserving the folder structure
 ```ps
-.\retrieve_audio_files.ps1 -USB_NAME "MyUSBDrive" -NoStructure
+.\backupdubs.ps1 -USB_NAME "MyUSBDrive" -NoStructure
 ```
