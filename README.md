@@ -64,11 +64,19 @@ Windows
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
 
+
+
+
+
 ## Usage:
 
 ### Basic Usage (MacOS and Linux):
 
-Will list you usb available to backup.
+```bash
+./backupdubs.sh --help
+```
+
+Will list you usb available to backup and start the operation.
 
 ```bash
 ./backupdubs.sh
@@ -84,7 +92,24 @@ This will copy all audio files into the `./AudioBackup` directory without preser
 ./backupdubs.sh <USB_NAME> --no-structure
 ```
 
+Set destination
+
+```bash
+./backupdubs.sh -d ./backup
+```
+
+```bash
+./backupdubs.sh --destination ./backup
+```
+
+
+--
+
 ### Basic Usage (Windows)
+
+```ps1
+./backupdubs.ps1 -Help
+```
 
 This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
 ```ps
@@ -95,3 +120,10 @@ This will copy all audio files into the `./AudioBackup` directory without preser
 ```ps
 .\backupdubs.ps1 -USB_NAME "MyUSBDrive" -NoStructure
 ```
+
+Set destination
+
+```bash
+./backupdubs.sh -Destination ./backup
+```
+
