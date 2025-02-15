@@ -12,14 +12,60 @@ else
     BASE_MOUNT="/media/$USER"
 fi
 
+# Function to display help
+show_help() {
+    echo ""
+    echo "                               BACKUPDUBS.SH                       "
+    echo ""
+    echo ""
+    echo "                                       -  =......:......---        "
+    echo "                                      .*..**+++=======-+:  .       "
+    echo "                                   + +@#..++=========--* .  -::    "
+    echo "                                   *#@@%=:+*==========-+=  :-::.   "
+    echo "                                  .++#@*+++*===========+=----:::   "
+    echo "                                  -#*+%#+++#********+++++++++-+:   "
+    echo "                                  +#:-+:.=..==:::::::----=--==+-   "
+    echo "                                  ***=++=-:   -------=   =---++*:  "
+    echo "        ####*********#**=         *#%*++:..:-----:------:-::-*++-  "
+    echo "        ####******=....+=   ..   :#*+=*:*=:--==.    :::--:.-:===:  "
+    echo "     =%#+  -  .---     =-   -:   +#+++**@#.--+*-    :----...:+=-:  "
+    echo "    =@@#######*****++++*-  .*-  .#%***#+%@*.===++====--- .--.++-.. "
+    echo "    .#@#*####***********==+-==--=@@***##=@@@#- ------. -++= :-**-- "
+    echo "     :-@@@@@@@@@@@@@@@@@%-*+**###@@:+==***-@@@@@@@@@@@@%#..+--*=:: "
+    echo "      .@@@@@@@@@@@@@@@@@@%%%%#####%+*+**++*#* +@@@@@@* .-----=*=-: "
+    echo "                            .:::::@.+--+++++++++====---------=+++- "
+    echo "                             .::::%****###@@@@@@@@%@@@@%%@%@@@@@@@+"
+    echo "                              ....%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+"
+    echo "                               ...%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@."
+    echo "                               ...#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "
+    echo "                                  :++++*++==------------------:.   "
+    echo ""
+    echo "backubdubs.sh"
+    echo "Usage: $0 [USB_NAME] [OPTIONS]"
+    echo ""
+    echo "Retrieve all audio files from a USB drive and copy them to a destination folder."
+    echo ""
+    echo "Options:"
+    echo "  -d, --destination PATH   Specify the destination directory (default: ./Audio_Backup)"
+    echo "      --no-structure       Do not preserve folder structure, flatten instead (default: keep structure)"
+    echo "  -h, --help               Show this help message and exit"
+    echo ""
+    echo "Examples:"
+    echo "  $0 MyUSB                Copy files from 'MyUSB' with folder structure to './Audio_Backup'"
+    echo "  $0 MyUSB -d /path/to/dest   Copy files from 'MyUSB' to '/path/to/dest'"
+    echo "  $0 MyUSB --no-structure -d /dest Copy without folder structure"
+    exit 0
+}
+
 # Function to list mounted USB drives
 list_usb_drives() {
     echo "Available USB drives:"
     ls "$BASE_MOUNT"
 }
 
-# Default flag value (keep structure)
+# Default values
 KEEP_STRUCTURE=true
+DEST_DIR="./Audio_Backup"
 
 # Parse command line options
 while [[ $# -gt 0 ]]; do
@@ -27,6 +73,13 @@ while [[ $# -gt 0 ]]; do
         --no-structure)
             KEEP_STRUCTURE=false
             shift
+            ;;
+        -d|--destination)
+            DEST_DIR=$2
+            shift 2
+            ;;
+        -h|--help)
+            show_help
             ;;
         *)
             if [ -z "$USB_NAME" ]; then
@@ -52,12 +105,6 @@ if [ ! -d "$USB_MOUNT" ]; then
     exit 1
 fi
 
-# Destination directory
-DEST_DIR="./Audio_Backup"
-
-# File types to look for
-FILE_TYPES="*.mp3 *.wav *.flac *.ogg *.aac *.m4a"
-
 # Create destination directory if it doesn't exist
 mkdir -p "$DEST_DIR"
 
@@ -68,22 +115,16 @@ find "$USB_MOUNT" -type f \( -iname "*.mp3" -o -iname "*.wav" -o -iname "*.flac"
     echo "Copying file: $file"  # Logging the file being copied
 
     if $KEEP_STRUCTURE; then
-        # Preserve folder structure (relative to USB_NAME)
         relative_path="${file#$USB_MOUNT/}"
-
-        # Create the directory structure under DEST_DIR if it doesn't exist
         mkdir -p "$DEST_DIR/$USB_NAME/$(dirname "$relative_path")"
-
-        # Now copy the file while keeping the folder structure
         cp "$file" "$DEST_DIR/$USB_NAME/$relative_path"
     else
-        # Copy all files directly to destination
-        # rsync -R "$file" "$DEST_DIR"
         cp "$file" "$DEST_DIR"
     fi
 done
 
 echo "All audio files have been copied to $DEST_DIR."
 
-echo "Clean up opened files (rsync leftover)"
-lsof "$USB_MOUNT" | awk 'NR>1 {print $2}' | xargs  kill -9
+echo "Cleaning up opened files (rsync leftover)"
+lsof "$USB_MOUNT" | awk 'NR>1 {print $2}' | xargs kill -9
+

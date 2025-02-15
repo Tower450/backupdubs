@@ -1,31 +1,74 @@
 # Parse command-line arguments
 param(
     [string]$USB_NAME,
-    [switch]$NoStructure
+    [switch]$NoStructure,
+    [string]$Destination = ".\Audio_Backup",
+    [switch]$Help
 )
+
+# Help function
+function Show-Help {
+    Write-Host @"
+			BACKUPDUBS - PowerShell Version
+
+
+                                       -  =......:......---        
+                                      .*..**+++=======-+:  .       
+                                   + +@#..++=========--* .  -::    
+                                   *#@@%=:+*==========-+=  :-::.   
+                                  .++#@*+++*===========+=----:::   
+                                  -#*+%#+++#********+++++++++-+:   
+                                  +#:-+:.=..==:::::::----=--==+-   
+                                  ***=++=-:   -------=   =---++*:  
+        ####*********#**=         *#%*++:..:-----:------:-::-*++-  
+        ####******=....+=   ..   :#*+=*:*=:--==.    :::--:.-:===:  
+     =%#+  -  .---     =-   -:   +#+++**@#.--+*-    :----...:+=-:  
+    =@@#######*****++++*-  .*-  .#%***#+%@*.===++====--- .--.++-.. 
+    .#@#*####***********==+-==--=@@***##=@@@#- ------. -++= :-**-- 
+     :-@@@@@@@@@@@@@@@@@%-*+**###@@:+==***-@@@@@@@@@@@@%#..+--*=:: 
+      .@@@@@@@@@@@@@@@@@@%%%%#####%+*+**++*#* +@@@@@@* .-----=*=-: 
+                            .:::::@.+--+++++++++====---------=+++- 
+                             .::::%****###@@@@@@@@%@@@@%%@%@@@@@@@+
+                              ....%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                               ...%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+                               ...#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
+                                  :++++*++==------------------:.   
+                                                        
+
+Usage:
+    .\backupdubs.ps1 [-USB_NAME <USB Name>] [-NoStructure] [-Destination <Path>] [-Help]
+
+Parameters:
+    -USB_NAME     : Specify the USB drive name or path (e.g., "E:\").
+    -NoStructure  : Copy all files into a single folder (no directory structure).
+    -Destination  : Specify the destination folder for copied audio files.
+    -Help         : Show this help information.
+
+Examples:
+    .\script.ps1 -USB_NAME "E:\" -Destination "C:\Backup"
+    .\script.ps1 -NoStructure -Destination "D:\AudioFiles"
+"@
+    exit
+}
+
+# Show help if requested
+if ($Help) {
+    Show-Help
+}
 
 # Store the OS type
 $OS_TYPE = Get-WmiObject -Class Win32_OperatingSystem | Select-Object -ExpandProperty Caption
-
-# Default USB mount path (Windows drives are under 'D:', 'E:', etc. based on the system)
-$BASE_MOUNT = "E:\"  # Adjust if needed to match your system's mount point.
 
 # Define the file types to search for
 $FILE_TYPES = @('.mp3', '.wav', '.flac', '.aac', '.ogg')
 
 # Default flag value (keep structure)
-$KEEP_STRUCTURE = $true
+$KEEP_STRUCTURE = -not $NoStructure
 
 # Function to list available drives
 function List-UsbDrives {
     Write-Host "Available USB drives:"
     Get-WmiObject -Class Win32_Volume | Where-Object {$_.DriveType -eq 2} | Select-Object -ExpandProperty Name
-}
-
-# Set flag if --no-structure is used
-Write-Host STRUCTURE VALUE $NoStructure
-if ($NoStructure) {
-    $KEEP_STRUCTURE = $false
 }
 
 # If USB_NAME is not provided, list USB drives and prompt for selection
@@ -43,13 +86,9 @@ if (-not (Test-Path -Path $USB_MOUNT)) {
     exit
 }
 
-# Set destination directory to the current directory
-$destinationDir = ".\Audio_Backup"
-
-
 # Create the destination directory if it doesn't exist
-if (-not (Test-Path -Path $destinationDir)) {
-    New-Item -ItemType Directory -Path $destinationDir
+if (-not (Test-Path -Path $Destination)) {
+    New-Item -ItemType Directory -Path $Destination
 }
 
 Write-Host "Searching for audio files on $USB_MOUNT..."
@@ -62,29 +101,25 @@ Get-ChildItem -Path $USB_MOUNT -Recurse -File | Where-Object {
     $file = $_
 
     Write-Host "Copying file:" $file.FullName
-    Write-Host "To:" $destinationDir
+    Write-Host "To:" $Destination
 
     if ($KEEP_STRUCTURE) {
-        Write-Host $NoStructure
         # Preserve folder structure (relative to USB_NAME)
         $relativePath = $file.FullName.Substring($USB_MOUNT.Length)
+        $destinationPath = Join-Path -Path $Destination -ChildPath $relativePath
 
-        # Create the directory structure under DEST_DIR if it doesn't exist
-        $destinationPath = Join-Path -Path $destinationDir -ChildPath $relativePath
-        Write-Host $destinationPath
-
-        if (-not (Test-Path -Path "$destinationPath")) {
-            Write-Host "Creating directory: $destinationPath"
-            New-Item -ItemType Directory -Path "$destinationPath"
+        $destinationFolder = Split-Path -Path $destinationPath -Parent
+        if (-not (Test-Path -Path $destinationFolder)) {
+            New-Item -ItemType Directory -Path $destinationFolder -Force
         }
 
-        # Now copy the file while keeping the folder structure
-        Copy-Item -Path $file.FullName -Destination "$destinationPath"
+        Copy-Item -Path $file.FullName -Destination $destinationPath
     }
     else {
-        # Copy all files directly to destination (without folder structure)
-        Copy-Item -Path $file.FullName -Destination "$destinationDir"
+        # Copy all files directly to destination
+        Copy-Item -Path $file.FullName -Destination $Destination
     }
 }
 
-Write-Host "All audio files have been copied to $destinationDir."
+Write-Host "All audio files have been copied to $Destination."
+
