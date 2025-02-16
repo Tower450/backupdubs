@@ -3,7 +3,8 @@ param(
     [string]$USB_NAME,
     [switch]$NoStructure,
     [string]$Destination = ".\Audio_Backup",
-    [switch]$Help
+    [switch]$Help,
+    [switch]$ExportFromRekordBox  # New flag for Rekordbox export
 )
 
 # Help function
@@ -29,24 +30,26 @@ function Show-Help {
       .@@@@@@@@@@@@@@@@@@%%%%#####%+*+**++*#* +@@@@@@* .-----=*=-: 
                             .:::::@.+--+++++++++====---------=+++- 
                              .::::%****###@@@@@@@@%@@@@%%@%@@@@@@@+
-                              ....%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
-                               ...%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+                              ....%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+ 
+                               ...%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@. 
                                ...#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
                                   :++++*++==------------------:.   
                                                         
 
 Usage:
-    .\backupdubs.ps1 [-USB_NAME <USB Name>] [-NoStructure] [-Destination <Path>] [-Help]
+    .\backupdubs.ps1 [-USB_NAME <USB Name>] [-NoStructure] [-Destination <Path>] [-Help] [-ExportFromRekordBox]
 
 Parameters:
-    -USB_NAME     : Specify the USB drive name or path (e.g., "E:\").
-    -NoStructure  : Copy all files into a single folder (no directory structure).
-    -Destination  : Specify the destination folder for copied audio files.
-    -Help         : Show this help information.
+    -USB_NAME        : Specify the USB drive name or path (e.g., "E:\").
+    -NoStructure     : Copy all files into a single folder (no directory structure).
+    -Destination     : Specify the destination folder for copied audio files.
+    -Help             : Show this help information.
+    -ExportFromRekordBox : Export audio files from the Rekordbox database to a specified directory.
 
 Examples:
-    .\script.ps1 -USB_NAME "E:\" -Destination "C:\Backup"
-    .\script.ps1 -NoStructure -Destination "D:\AudioFiles"
+    .\backupdubs.ps1 -USB_NAME "E:\" -Destination "C:\Backup"
+    .\backupdubs.ps1 -NoStructure"
+    .\backupdubs.ps1 -ExportFromRekordBox"
 "@
     exit
 }
@@ -54,6 +57,55 @@ Examples:
 # Show help if requested
 if ($Help) {
     Show-Help
+}
+
+# If ExportFromRekordBox flag is set, execute Rekordbox export logic
+if ($ExportFromRekordBox) {
+    Install-Module -Name PSSQLite -Force -AllowClobber
+    Import-Module PSSQLite
+
+    $userLibraryPath = Join-Path -Path $env:USERPROFILE -ChildPath "AppData\Roaming"
+    $rekordboxDbPath = (Get-ChildItem -Path $userLibraryPath -Recurse -Filter "networkAnalyze*.db" -File -ErrorAction SilentlyContinue).FullName
+    $exportDir = "./export_from_rekordbox_files"
+
+    # Create destination directory if it doesn't exist
+    if (!(Test-Path -Path $exportDir)) {
+        New-Item -ItemType Directory -Path $exportDir | Out-Null
+        Write-Output "Created destination directory: $exportDir"
+    }
+
+    # Check if the Rekordbox database exists
+    if (!(Test-Path -Path $rekordboxDbPath)) {
+        Write-Output "Rekordbox database not found at $rekordboxDbPath"
+        exit
+    }
+
+    # Query the database and export audio files
+    $query = "SELECT SongFilePath FROM manage_tbl;"
+    $files = Invoke-SqliteQuery -DataSource $rekordboxDbPath -Query $query
+    foreach ($file in $files) {
+        # Extract the SongFilePath from each result
+        $filePath = $file.SongFilePath
+
+        # Check if the file exists
+        if (-Not (Test-Path -Path $filePath)) {
+            Write-Output "File not found: $filePath"
+        } else {
+            # Get the file name from the path and copy the file
+            $fileName = Split-Path -Path $filePath -Leaf
+            $destination = Join-Path -Path $exportDir -ChildPath $fileName
+
+            if (-not (Test-Path -Path "$destination")) {
+                Copy-Item -Path $filePath -Destination $destination
+            } else {
+                Write-Host "File already exists $destination\$fileName"
+            }
+            Write-Output "Copied: $filePath to $destination"
+        }
+    }
+
+    Write-Output "Export completed to $exportDir"
+    exit
 }
 
 # Store the OS type
