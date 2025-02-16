@@ -113,23 +113,30 @@ Will retrieve all existing tracks in rekordbox and flat it into a single folder.
 
 ### Basic Usage (Windows)
 
-```ps1
+```pwsh
 ./backupdubs.ps1 -Help
 ```
 
 This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
-```ps
+```pwsh
 .\backupdubs.ps1 -USB_NAME "MyUSBDrive"
 ```
 
 This will copy all audio files into the `./AudioBackup` directory without preserving the folder structure
-```ps
+```pwsh
 .\backupdubs.ps1 -USB_NAME "MyUSBDrive" -NoStructure
 ```
 
 Set destination
 
-```bash
-./backupdubs.sh -Destination ./backup
+```pwsh
+./backupdubs.ps1 -Destination ./backup
 ```
 
+Rekordbox export
+
+Will retrieve all existing tracks in rekordbox and flat it into a single folder.
+
+```pwsh
+.\backupdubs.ps1 -ExportFromRekordBox
+```
