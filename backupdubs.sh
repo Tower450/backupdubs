@@ -75,8 +75,12 @@ db_export_from_rekordbox() {
     fi
     sqlite3 "$db_path" "SELECT SongFilePath FROM manage_tbl;" | while read source_path; do
         if [ -f "$source_path" ]; then
-            cp "$source_path" "$export_dir/$(basename "$source_path")"
-            echo "Copied: $source_path"
+            if [ -e "$export_dir/$(basename "$source_path")" ]; then
+              echo "File already exists: "$export_dir/$(basename "$source_path")""
+            else
+              cp "$source_path" "$export_dir/$(basename "$source_path")"
+              echo "Copied: $source_path"
+            fi
         else
             echo "File does not exist: $source_path"
         fi
@@ -144,7 +148,13 @@ find "$USB_MOUNT" -type f \( -iname "*.mp3" -o -iname "*.wav" -o -iname "*.flac"
         mkdir -p "$DEST_DIR/$USB_NAME/$(dirname "$relative_path")"
         cp "$file" "$DEST_DIR/$USB_NAME/$relative_path"
     else
-        cp "$file" "$DEST_DIR"
+        dest_path="$DEST_DIR/$(basename "$file")" 
+        if [ -e "$dest_path" ]; then
+            echo "File already exists: $dest_path"
+        else
+          cp "$file" "$dest_path"
+          echo "Copied: $file"
+        fi
     fi
 done
 
