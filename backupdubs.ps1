@@ -113,7 +113,7 @@ Get-ChildItem -Path $USB_MOUNT -Recurse -File | Where-Object {
             New-Item -ItemType Directory -Path $destinationFolder -Force
         }
 
-        if (-not (Test-Path -Path "$destinationPath\$file")) {
+        if (-Not (Test-Path -Path "$destinationPath\$file.FullName")) {
             Copy-Item -LiteralPath $file.FullName -Destination "$destinationPath"
         } else {
             Write-Host "File already exists: $destinationPath"
@@ -121,10 +121,10 @@ Get-ChildItem -Path $USB_MOUNT -Recurse -File | Where-Object {
     }
     else {
         # Copy all files directly to destination
-        if (-not (Test-Path -Path "$Destination\$file")) {
+        if (-Not (Test-Path -Path "$Destination\$file")) {
             Copy-Item -LiteralPath $file.FullName -Destination "$Destination"
         } else {
-            Write-Host "File already exists: $Destination"
+            Write-Host "File already exists: $Destination\$file"
         }
     }
 }
