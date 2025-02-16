@@ -1,7 +1,8 @@
-# PowerShell Script: Export from Rekordbox on Windows
+Install-Module PSSQLite
+Import-Module PSSQLite
 
-# Define Rekordbox database path for Windows
-$rekordboxDbPath = "$env:APPDATA\Pioneer\rekordbox\networkAnalyze.db"
+$userLibraryPath = Join-Path -Path $env:USERPROFILE -ChildPath "AppData\Roaming"
+$rekordboxDbPath = (Get-ChildItem -Path $userLibraryPath -Recurse -Filter "networkAnalyze*.db" -File -ErrorAction SilentlyContinue).FullName
 $exportDir = "./export_from_rekordbox_files"
 
 # Create destination directory if it doesn't exist
@@ -17,14 +18,22 @@ if (!(Test-Path -Path $rekordboxDbPath)) {
 }
 
 # Query the database and export audio files
-$files = sqlite3 $rekordboxDbPath "SELECT SongFilePath FROM manage_tbl;"
+$query = "SELECT SongFilePath FROM manage_tbl;"
+$files = Invoke-SqliteQuery -DataSource $rekordboxDbPath -Query $query
 foreach ($file in $files) {
-    if (Test-Path -Path $file) {
-        $fileName = Split-Path -Path $file -Leaf
-        Copy-Item -Path $file -Destination "$exportDir\$fileName"
-        Write-Output "Copied: $file to $exportDir"
+    # Extract the SongFilePath from each result
+    $filePath = $file.SongFilePath
+
+    # Check if the file exists
+    if (-Not (Test-Path -Path $filePath)) {
+        Write-Output "File not found: $filePath"
     } else {
-        Write-Output "File not found: $file"
+        # Get the file name from the path and copy the file
+        $fileName = Split-Path -Path $filePath -Leaf
+        $destination = Join-Path -Path $exportDir -ChildPath $fileName
+
+        Copy-Item -Path $filePath -Destination $destination
+        Write-Output "Copied: $filePath to $destination"
     }
 }
 
