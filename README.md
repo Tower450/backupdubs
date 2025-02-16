@@ -47,6 +47,7 @@ This script allows you to copy all audio files from a USB drive to your local ma
 - Supports the following audio file formats: `.mp3`, `.wav`, `.flac`, `.ogg`, `.aac`, `.m4a`.
 - **Preserves folder structure** by default, or can **flatten the folder structure** with a flag (`--no-structure`).
 - Logs each file being copied for easy tracking.
+- Export all tracks in Rekordbox library inside a folder (flatten).
 
 ## Prerequisites:
 - The script has been tested on **macOS** and **Linux**.
@@ -64,8 +65,6 @@ Windows
 ```ps
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
-
-
 
 ## Usage:
 
