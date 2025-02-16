@@ -113,13 +113,20 @@ Get-ChildItem -Path $USB_MOUNT -Recurse -File | Where-Object {
             New-Item -ItemType Directory -Path $destinationFolder -Force
         }
 
-        Copy-Item -Path $file.FullName -Destination $destinationPath
+        if (-not (Test-Path -Path "$destinationPath\$file")) {
+            Copy-Item -LiteralPath $file.FullName -Destination "$destinationPath"
+        } else {
+            Write-Host "File already exists: $destinationPath"
+        }
     }
     else {
         # Copy all files directly to destination
-        Copy-Item -Path $file.FullName -Destination $Destination
+        if (-not (Test-Path -Path "$Destination\$file")) {
+            Copy-Item -LiteralPath $file.FullName -Destination "$Destination"
+        } else {
+            Write-Host "File already exists: $Destination"
+        }
     }
 }
 
 Write-Host "All audio files have been copied to $Destination."
-
