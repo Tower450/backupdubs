@@ -51,6 +51,7 @@ This script allows you to copy all audio files from a USB drive to your local ma
 ## Prerequisites:
 - The script has been tested on **macOS** and **Linux**.
 - The USB drive must be mounted and accessible.
+- Install sqlite3 and sqlcipher (rekordbox export)
 
 Linux / MacOS
 **Don't forget to make it executable**
@@ -63,8 +64,6 @@ Windows
 ```ps
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
-
-
 
 
 
@@ -102,28 +101,42 @@ Set destination
 ./backupdubs.sh --destination ./backup
 ```
 
+Rekordbox export
 
---
+Will retrieve all existing tracks in rekordbox and flat it into a single folder.
+
+```bash
+./backupdubs.sh --export-from-rekordbox
+```
+
+---
 
 ### Basic Usage (Windows)
 
-```ps1
+```pwsh
 ./backupdubs.ps1 -Help
 ```
 
 This will copy all the audio files and keep folder structure into the `./AudioBackup` directory.
-```ps
+```pwsh
 .\backupdubs.ps1 -USB_NAME "MyUSBDrive"
 ```
 
 This will copy all audio files into the `./AudioBackup` directory without preserving the folder structure
-```ps
+```pwsh
 .\backupdubs.ps1 -USB_NAME "MyUSBDrive" -NoStructure
 ```
 
 Set destination
 
-```bash
-./backupdubs.sh -Destination ./backup
+```pwsh
+./backupdubs.ps1 -Destination ./backup
 ```
 
+Rekordbox export
+
+Will retrieve all existing tracks in rekordbox and flat it into a single folder.
+
+```pwsh
+.\backupdubs.ps1 -ExportFromRekordBox
+```
