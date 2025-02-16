@@ -48,6 +48,7 @@ show_help() {
     echo "Options:"
     echo "  -d, --destination PATH   Specify the destination directory (default: ./Audio_Backup)"
     echo "      --no-structure       Do not preserve folder structure, flatten instead (default: keep structure)"
+    echo "  --export-from-rekordbox  Export files from Rekordbox to ./export_from_rekordbox_files"
     echo "  -h, --help               Show this help message and exit"
     echo ""
     echo "Examples:"
@@ -61,6 +62,26 @@ show_help() {
 list_usb_drives() {
     echo "Available USB drives:"
     ls "$BASE_MOUNT"
+}
+
+# Function to export from Rekordbox
+db_export_from_rekordbox() {
+    export_dir="./export_from_rekordbox_files"
+    mkdir -p "$export_dir"
+    db_path=$(find /Users/$(whoami)/Library/Pioneer -type f -name "networkAnalyze*.db" 2>/dev/null)
+    if [ -z "$db_path" ]; then
+        echo "No networkAnalyze database found."
+        exit 1
+    fi
+    sqlite3 "$db_path" "SELECT SongFilePath FROM manage_tbl;" | while read source_path; do
+        if [ -f "$source_path" ]; then
+            cp "$source_path" "$export_dir/$(basename "$source_path")"
+            echo "Copied: $source_path"
+        else
+            echo "File does not exist: $source_path"
+        fi
+    done
+    echo "Export completed to $export_dir"
 }
 
 # Default values
@@ -77,6 +98,10 @@ while [[ $# -gt 0 ]]; do
         -d|--destination)
             DEST_DIR=$2
             shift 2
+            ;;
+        --export-from-rekordbox)
+            db_export_from_rekordbox
+            exit 0
             ;;
         -h|--help)
             show_help

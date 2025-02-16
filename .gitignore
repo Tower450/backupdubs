@@ -1,5 +1,7 @@
-# Bacup folder
-./Audio_Backup
+# backup folders
+Audio_Backup/
+export-from-rekordbox-files/
+
 
 # MacOS
 .DS_Store
