@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # from pyrekordbox.config import write_db6_key_cache
+
 from pyrekordbox import show_config
 from pyrekordbox import Rekordbox6Database
 
@@ -15,7 +16,6 @@ for content in db.get_content():
 
 print("Listing tracks done.")   
 
-
 print("List Playlist")
 playlists = db.get_playlist()
 for playlist in playlists:
@@ -25,5 +25,12 @@ for playlist in playlists:
     print("Name::", playlist.Name)
     for song in playlist.Songs:
         # print(song.Content)
-        print("\t", song.Content.Title)
+        key = None
+        keyObject = db.get_key(ID=song.Content.KeyID)
+        if keyObject is None:
+          print("No matching record found for:", song.Content.KeyID)
+        else:
+         key = keyObject.ScaleName
+        print("\t", song.Content.Title, "\t", song.Content.BPM, key, song.Content.FolderPath)
     print("=======End of Playlist========")
+
