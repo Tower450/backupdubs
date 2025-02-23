@@ -6,6 +6,11 @@
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-link]: https://opensource.org/licenses/MIT
 
+[![Platform: Linux][platform-linux-badge]][pypi-link]
+[![Platform: macOS][platform-macos-badge]][pypi-link]
+[![Platform: Windows][platform-windows-badge]][pypi-link]
+[![license: MIT][license-badge]][license-link]
+
 A USB backup program for DJ.
 Usefull if your computer or laptop get stolen and the only thing you have left is your dj usb key.
 
