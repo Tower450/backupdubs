@@ -1,7 +1,10 @@
 # backupdubs.sh
 
-[![Platform][platform-badge]][pypi-link]
-[![license: MIT][license-badge]][license-link]
+[platform-linux-badge]: https://img.shields.io/badge/platform-linux-brightgreen
+[platform-macos-badge]: https://img.shields.io/badge/platform-macos-lightgrey
+[platform-windows-badge]: https://img.shields.io/badge/platform-windows-blue
+[license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[license-link]: https://opensource.org/licenses/MIT
 
 A USB backup program for DJ.
 Usefull if your computer or laptop get stolen and the only thing you have left is your dj usb key.
