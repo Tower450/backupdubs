@@ -1,5 +1,8 @@
 # backupdubs.sh
 
+[![Platform][platform-badge]][pypi-link]
+[![license: MIT][license-badge]][license-link]
+
 A USB backup program for DJ.
 Usefull if your computer or laptop get stolen and the only thing you have left is your dj usb key.
 
@@ -50,7 +53,7 @@ This script allows you to copy all audio files from a USB drive to your local ma
 - Export all tracks in Rekordbox library inside a folder (flatten).
 
 ## Prerequisites:
-- The script has been tested on **macOS** and **Linux**.
+- The script has been tested on **macOS**,**Linux** and *Windows*.
 - The USB drive must be mounted and accessible.
 - Install sqlite3 and sqlcipher (rekordbox export)
 
