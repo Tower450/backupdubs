@@ -7,8 +7,8 @@
 [license-link]: https://opensource.org/licenses/MIT
 
 ![Platform: Linux][platform-linux-badge]
-![Platform: macOS][platform-macos-badge]]
-![Platform: Windows][platform-windows-badge]]
+![Platform: macOS][platform-macos-badge]
+![Platform: Windows][platform-windows-badge]
 ![license: MIT][license-badge]][license-link]
 
 A USB backup program for DJ.
