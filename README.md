@@ -9,7 +9,7 @@
 ![Platform: Linux][platform-linux-badge]
 ![Platform: macOS][platform-macos-badge]
 ![Platform: Windows][platform-windows-badge]
-![license: MIT][license-badge][license-link]
+![license: MIT][license-badge]
 
 A USB backup program for DJ.
 Usefull if your computer or laptop get stolen and the only thing you have left is your dj usb key.
