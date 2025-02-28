@@ -9,7 +9,11 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
     BASE_MOUNT="/Volumes"
 else
     OS="Linux"
-    BASE_MOUNT="/media/$USER"
+    if [ -f "/etc/arch-release" ]; then # support ArchLinux
+        BASE_MOUNT="/run/media/$USER"
+    else
+        BASE_MOUNT="/media/$USER"
+    fi
 fi
 
 # Function to display help
