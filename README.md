@@ -77,6 +77,19 @@ Windows
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
 
+### Dependencies
+
+```
+pip3 install pyrekordbox
+```
+
+## Generate Key into cache (MacOS and Linux, not sure Windows might be slightly different ?)
+
+```
+python -m pyrekordbox download-key
+```
+
+
 ## Usage:
 
 ### Basic Usage (MacOS and Linux):
