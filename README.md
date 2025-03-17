@@ -83,7 +83,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 pip3 install pyrekordbox
 ```
 
-## Generate Key into cache (MacOS and Linux, not sure Windows might be slightly different ?)
+*Generate Key into cache (MacOS and Linux, not sure Windows might be slightly different ?)*
 
 ```
 python -m pyrekordbox download-key
