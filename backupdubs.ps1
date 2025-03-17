@@ -75,9 +75,9 @@ if ($ExportFromRekordBox) {
 
     # Run script to export/backup from rekordbox in playlist folders.
     python "./scripts/backupdubs_pyrekordbox.py"  "$exportDir"
-    if ($LASTEXITCODE -eq 0) {
+    if ($?) {
         Write-Output "Pyrekordbox script executed successfully!"
-    } else {     
+    } else {
       # Check if the Rekordbox database exists
       if (!(Test-Path -Path $rekordboxDbPath)) {
           Write-Output "Rekordbox database not found at $rekordboxDbPath"
