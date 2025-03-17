@@ -67,18 +67,17 @@ if ($ExportFromRekordBox) {
     $userLibraryPath = Join-Path -Path $env:USERPROFILE -ChildPath "AppData\Roaming"
     $rekordboxDbPath = (Get-ChildItem -Path $userLibraryPath -Recurse -Filter "networkAnalyze*.db" -File -ErrorAction SilentlyContinue).FullName
     $exportDir = "./export_from_rekordbox_files"
+    # Create destination directory if it doesn't exist
+    if (!(Test-Path -Path $exportDir)) {
+        New-Item -ItemType Directory -Path $exportDir | Out-Null
+        Write-Output "Created destination directory: $exportDir"
+    }
 
     # Run script to export/backup from rekordbox in playlist folders.
     python "./scripts/backupdubs_pyrekordbox.py"  "$exportDir"
     if ($LASTEXITCODE -eq 0) {
         Write-Output "Pyrekordbox script executed successfully!"
     } else {     
-      # Create destination directory if it doesn't exist
-      if (!(Test-Path -Path $exportDir)) {
-          New-Item -ItemType Directory -Path $exportDir | Out-Null
-          Write-Output "Created destination directory: $exportDir"
-      }
-
       # Check if the Rekordbox database exists
       if (!(Test-Path -Path $rekordboxDbPath)) {
           Write-Output "Rekordbox database not found at $rekordboxDbPath"
