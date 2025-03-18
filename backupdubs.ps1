@@ -61,9 +61,6 @@ if ($Help) {
 
 # If ExportFromRekordBox flag is set, execute Rekordbox export logic
 if ($ExportFromRekordBox) {
-    Install-Module -Name PSSQLite -Force -AllowClobber
-    Import-Module PSSQLite
-
     $userLibraryPath = Join-Path -Path $env:USERPROFILE -ChildPath "AppData\Roaming"
     $rekordboxDbPath = (Get-ChildItem -Path $userLibraryPath -Recurse -Filter "networkAnalyze*.db" -File -ErrorAction SilentlyContinue).FullName
     $exportDir = "./export_from_rekordbox_files"
@@ -78,6 +75,8 @@ if ($ExportFromRekordBox) {
     if ($?) {
         Write-Output "Pyrekordbox script executed successfully!"
     } else {
+      Install-Module -Name PSSQLite -Force -AllowClobber
+      Import-Module PSSQLite
       # Check if the Rekordbox database exists
       if (!(Test-Path -Path $rekordboxDbPath)) {
           Write-Output "Rekordbox database not found at $rekordboxDbPath"
