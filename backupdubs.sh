@@ -72,23 +72,29 @@ list_usb_drives() {
 db_export_from_rekordbox() {
     export_dir="./export_from_rekordbox_files"
     mkdir -p "$export_dir"
-    db_path=$(find /Users/$(whoami)/Library/Pioneer -type f -name "networkAnalyze*.db" 2>/dev/null)
-    if [ -z "$db_path" ]; then
-        echo "No networkAnalyze database found."
-        exit 1
+    # execute script for export/backup from rekordbox
+    python3 "./scripts/backupdubs_pyrekordbox.py" "$export_dir"
+    if [ $? -eq 0 ]; then
+      echo "Pyrekordbox script executed successfully!"
+    else
+      db_path=$(find /Users/$(whoami)/Library/Pioneer -type f -name "networkAnalyze*.db" 2>/dev/null)
+      if [ -z "$db_path" ]; then
+          echo "No networkAnalyze database found."
+          exit 1
+      fi
+      sqlite3 "$db_path" "SELECT SongFilePath FROM manage_tbl;" | while read source_path; do
+          if [ -f "$source_path" ]; then
+              if [ -e "$export_dir/$(basename "$source_path")" ]; then
+                echo "File already exists: "$export_dir/$(basename "$source_path")""
+              else
+                cp "$source_path" "$export_dir/$(basename "$source_path")"
+                echo "Copied: $source_path"
+              fi
+          else
+              echo "File does not exist: $source_path"
+          fi
+      done
     fi
-    sqlite3 "$db_path" "SELECT SongFilePath FROM manage_tbl;" | while read source_path; do
-        if [ -f "$source_path" ]; then
-            if [ -e "$export_dir/$(basename "$source_path")" ]; then
-              echo "File already exists: "$export_dir/$(basename "$source_path")""
-            else
-              cp "$source_path" "$export_dir/$(basename "$source_path")"
-              echo "Copied: $source_path"
-            fi
-        else
-            echo "File does not exist: $source_path"
-        fi
-    done
     echo "Export completed to $export_dir"
 }
 
