@@ -53,6 +53,7 @@ show_help() {
     echo "  -d, --destination PATH   Specify the destination directory (default: ./Audio_Backup)"
     echo "      --no-structure       Do not preserve folder structure, flatten instead (default: keep structure)"
     echo "  --export-from-rekordbox  Export files from Rekordbox to ./export_from_rekordbox_files"
+    echo "  --convert320             Convert all .mp3 files under 320kbps bit rate to 320kbps into (./MP3_320)"
     echo "  -h, --help               Show this help message and exit"
     echo ""
     echo "Examples:"
@@ -98,6 +99,36 @@ db_export_from_rekordbox() {
     echo "Export completed to $export_dir"
 }
 
+convert_mp3_to_320() {
+    local mp3_dest_dir="./MP3_320"
+
+    # Check required tools
+    command -v ffprobe >/dev/null 2>&1 || { echo >&2 "ffprobe not found. Please install ffmpeg."; exit 1; }
+    command -v lame >/dev/null 2>&1 || { echo >&2 "lame not found. Please install lame."; exit 1; }
+
+    mkdir -p "$mp3_dest_dir"
+
+    for file in "$FOLDER_CONTAINING_MP3"/*.mp3; do
+        echo $file
+        echo "\n"
+        # [ -e "$file" ] || continue  # skip if no .mp3 found
+
+        echo "Checking $file..."
+
+        bitrate=$(ffprobe -v error -select_streams a:0 -show_entries stream=bit_rate \
+                  -of default=noprint_wrappers=1:nokey=1 "$file")
+        bitrate_kbps=$((bitrate / 1000))
+
+        if [ "$bitrate_kbps" -lt 320 ]; then
+            output="$mp3_dest_dir/$(basename "$file")_320.mp3"
+            echo "➤ Re-encoding to 320 kbps → $output"
+            lame --mp3input -b 320 "$file" "$output"
+        else
+            echo "✓ $file is already 320 kbps — skipping."
+        fi
+    done
+}
+
 # Default values
 KEEP_STRUCTURE=true
 DEST_DIR="./Audio_Backup"
@@ -115,6 +146,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --export-from-rekordbox)
             db_export_from_rekordbox
+            exit 0
+            ;;
+        --convert320)
+            FOLDER_CONTAINING_MP3=$2
+            convert_mp3_to_320
             exit 0
             ;;
         -h|--help)
